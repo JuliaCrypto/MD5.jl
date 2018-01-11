@@ -22,8 +22,9 @@ function conclude_round(a,b,c,d,f,g,pbuf,i)
     a,b,c,d
 end
 
+transform!(ctx::MD5_CTX) = transform_unrolled!(ctx)
 
-function transform!(context::MD5_CTX)
+function transform_baseline!(context::MD5_CTX)
    pbuf = buffer_pointer(context)
    a,b,c,d = context.state
      
@@ -50,6 +51,56 @@ function transform!(context::MD5_CTX)
     @inbounds context.state .+= [a,b,c,d]
 end
 
+@generated function transform_unrolled!(context::MD5_CTX)
+    ret = quote
+        pbuf = buffer_pointer(context)
+    end
+    ex  = quote
+        A = context.state[1]
+        B = context.state[2]
+        C = context.state[3]
+        D = context.state[4]
+    end
+    push!(ret.args, ex)
+    for i in 0:63
+        if 0 ≤ i ≤ 15
+            ex = :(F = (B & C) | ((~B) & D))
+            g = i
+        elseif 16 ≤ i ≤ 31
+            ex = :(F = (D & B) | ((~D) & C))
+            g = 5i + 1
+        elseif 32 ≤ i ≤ 47
+            ex = :(F = B ⊻ C ⊻ D)
+            g = 3i + 5
+        elseif 48 ≤ i ≤ 63
+            ex = :(F = C ⊻ (B | (~D)))
+            g = 7i
+        end
+        push!(ret.args, ex)
+        g = (g % 16) + 1
+        ex = quote
+            temp = D
+            D = C
+            C = B
+            inner = A + F + $(kk[i+1]) + unsafe_load(pbuf, $g)
+            rot_inner = lrot($(ss[i+1]), inner, 32)
+            B = B + rot_inner
+            A = temp
+        end
+        push!(ret.args, ex)
+    end
+
+    ex = quote
+        context.state[1] += A
+        context.state[2] += B
+        context.state[3] += C
+        context.state[4] += D
+    end
+    push!(ret.args, ex)
+    quote
+        @inbounds $ret
+    end
+end
 
 function digest!(context::T) where {T<:MD5_CTX}
     pad_remainder!(context)
