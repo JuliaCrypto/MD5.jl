@@ -1,30 +1,33 @@
 import Nettle
+# redundant imports, so this file can be run standalone
+using Base.Test
+import MD5
 
-function test_equal_state(m::MD5.MD5_CTX,n::Nettle.Hasher)
-    @test (n.state)[1:16] == reinterpret(UInt8, m.state)
+function test_equal_state(md5_value::MD5.MD5_CTX,nettle_value::Nettle.Hasher)
+    @test nettle_value.state[1:16] ==
+        reinterpret(UInt8, md5_value.state)
 end
 
 @testset "Against Nettle initialize, update!, digest!" begin
-    for chunkcount ∈ [0,1,2,3, 10, 100]
-        m = MD5.MD5_CTX()
-        n = Nettle.Hasher("md5")
-        test_equal_state(m,n)
+    for _ in 1:10, chunkcount in [0,1,2,3, 10, 100]
+        md5_value = MD5.MD5_CTX()
+        nettle_value = Nettle.Hasher("md5")
+        test_equal_state(md5_value, nettle_value)
         for _ in 1:chunkcount
             chunksize = rand(0:10000)
             data = rand(UInt8, chunksize)
-            test_equal_state(m, n)
-            MD5.update!(m, data)
-            Nettle.update!(n, data)
-            test_equal_state(m,n)
+            MD5.update!(md5_value, data)
+            Nettle.update!(nettle_value, data)
+            test_equal_state(md5_value,nettle_value)
         end
-        @test MD5.digest!(m) == Nettle.digest!(n)
+        @test MD5.digest!(md5_value) == Nettle.digest!(nettle_value)
     end
 end
 
 @testset "Against Nettle end to end" begin
-    for offset ∈ [0,10^3, 10^4, 10^5]
+    for offset in [0,10^3, 10^4, 10^5]
         iter = offset:(offset+1000)
-        for l ∈ iter
+        for l in iter
             s = randstring(l)
             @test Nettle.hexdigest("md5", s) == bytes2hex(md5(s))
         end
