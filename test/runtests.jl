@@ -12,3 +12,20 @@ using Base.Test
     @test bytes2hex(md5("12345678901234567890123456789012345678901234567890123456789012345678901234567890")) == "57edf4a22be3c955ac49da2e2107b67a"
 
 end
+
+@testset "Different forms of input data consistent" begin
+    for len in [0,1,10,100,1000]
+        bytearray = rand(UInt8, len)
+        str = String(bytearray)
+        stream = IOBuffer(bytearray)
+        @test md5(bytearray) == md5(str)
+        @test md5(stream) == md5(str)
+    end
+end
+
+@testset "misc" begin
+    @test MD5.digestlen(MD5.MD5_CTX) == length(md5(""))
+    @test contains(sprint(show, MD5.MD5_CTX()), "MD5")
+end
+
+include("nettle.jl")
