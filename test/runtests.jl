@@ -14,13 +14,12 @@ using Base.Test
 end
 
 @testset "Different forms of input data consistent" begin
-    for l in [0,1,10,100,1000]
-        bytearray = rand(UInt8, l)
+    for len in [0,1,10,100,1000]
+        bytearray = rand(UInt8, len)
         str = String(bytearray)
+        stream = IOBuffer(bytearray)
         @test md5(bytearray) == md5(str)
-        path = tempname()
-        write(path, str)
-        @test open(md5, path) == md5(str)
+        @test md5(stream) == md5(str)
     end
 end
 
