@@ -1,8 +1,8 @@
 The MD5.jl package is licensed under the MIT "Expat" License:
 
-> Copyright (c) 2018: Lyndon White and Jan Weidner.
-> Copyright (c) 2014: Elliot Saba. (SHA.jl)
-> Derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm,  Copyright (C) 1991-2
+> Copyright (c) 2018: Lyndon White and Jan Weidner.  
+> Copyright (c) 2014: Elliot Saba. (SHA.jl)  
+> Derived from the RSA Data Security, Inc. MD5 Message-Digest Algorithm,  Copyright (C) 1991-2  
 > 
 >
 > Permission is hereby granted, free of charge, to any person obtaining a copy
