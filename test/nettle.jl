@@ -1,7 +1,11 @@
-import Nettle
 # redundant imports, so this file can be run standalone
-using Base.Test
+using Test
 import MD5
+using Random
+
+
+import Nettle
+
 
 function test_equal_state(md5_value::MD5.MD5_CTX,nettle_value::Nettle.Hasher)
     @test nettle_value.state[1:16] ==
@@ -33,3 +37,4 @@ end
         end
     end
 end
+

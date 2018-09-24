@@ -1,5 +1,5 @@
 using MD5
-using Base.Test
+using Test
 
 @testset "String Tests" begin
     # From the reference https://tools.ietf.org/html/rfc1321 (final page)
@@ -14,18 +14,18 @@ using Base.Test
 end
 
 @testset "Different forms of input data consistent" begin
-    for len in [0,1,10,100,1000]
-        bytearray = rand(UInt8, len)
-        str = String(bytearray)
-        stream = IOBuffer(bytearray)
-        @test md5(bytearray) == md5(str)
+    for len in [0,1,10, 100,1000]
+        bytes = rand(UInt8, len)
+        str = String(copy(bytes)) # String will take ownership and empty it's array inputs
+        stream = IOBuffer(bytes)
+        @test md5(bytes) == md5(str)
         @test md5(stream) == md5(str)
     end
 end
 
 @testset "misc" begin
     @test MD5.digestlen(MD5.MD5_CTX) == length(md5(""))
-    @test contains(sprint(show, MD5.MD5_CTX()), "MD5")
+    @test occursin("MD5", sprint(show, MD5.MD5_CTX()))
 end
 
 include("nettle.jl")
