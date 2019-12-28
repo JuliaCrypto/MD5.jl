@@ -1,14 +1,12 @@
-@generated function transform!(context::MD5_CTX)
-    ret = quote
-        pbuf = buffer_pointer(context)
-    end
+let body = quote end
     ex  = quote
+        pbuf = buffer_pointer(context)
         @inbounds A = context.state[1]
         @inbounds B = context.state[2]
         @inbounds C = context.state[3]
         @inbounds D = context.state[4]
     end
-    push!(ret.args, ex)
+    push!(body.args, ex)
     for i in 0:63
         if 0 ≤ i ≤ 15
             ex = :(F = (B & C) | ((~B) & D))
@@ -23,7 +21,7 @@
             ex = :(F = C ⊻ (B | (~D)))
             g = 7i
         end
-        push!(ret.args, ex)
+        push!(body.args, ex)
         g = (g % 16) + 1
         ex = quote
             temp = D
@@ -34,7 +32,7 @@
             B = B + rot_inner
             A = temp
         end
-        push!(ret.args, ex)
+        push!(body.args, ex)
     end
 
     ex = quote
@@ -43,9 +41,10 @@
         @inbounds context.state[3] += C
         @inbounds context.state[4] += D
     end
-    push!(ret.args, ex)
-    quote
-        $ret
+    push!(body.args, ex)
+
+    @eval function transform!(context::MD5_CTX)
+        $body
     end
 end
 
