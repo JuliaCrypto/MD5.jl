@@ -29,3 +29,4 @@ end
 end
 
 include("nettle.jl")
+include("perf.jl")
