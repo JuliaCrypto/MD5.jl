@@ -23,7 +23,7 @@ Just like the functions from SHA.jl
 This makes it trivial to checksum a file.
 
 
-```
+```julia
 julia> using MD5
 
 julia> bytes2hex(md5("test"))
