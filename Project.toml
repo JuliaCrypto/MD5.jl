@@ -6,8 +6,11 @@ version = "0.2.1"
 Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
 
+# We use SHA internals, so need this version of SHA exactly.
+# Previous Julia versions ship with a fixed SHA version, so cannot be used.
 [compat]
-julia = "0.7, 1"
+julia = "1.8"
+SHA = "=0.7.0"
 
 [extras]
 BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
