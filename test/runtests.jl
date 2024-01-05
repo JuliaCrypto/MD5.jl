@@ -30,3 +30,4 @@ end
 
 include("nettle.jl")
 include("perf.jl")
+include("deprecated.jl")

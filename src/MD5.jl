@@ -10,6 +10,7 @@ export md5
 include("constants.jl")
 include("types.jl")
 include("core.jl")
+include("deprecated.jl")
 
 
 # Our basic function is to process arrays of bytes

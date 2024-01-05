@@ -1,0 +1,1 @@
+@test (@test_deprecated copy(MD5.MD5_CTX())) isa MD5.MD5_CTX
